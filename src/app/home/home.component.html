@@ -1,0 +1,21 @@
+<div class="bg">
+  <h1>
+      Welcome To MongOOse Chat
+  </h1>
+</div>
+<div class="container" >
+  <h2>Register</h2>
+  <form class="example-form">
+      <mat-form-field class="example-full-width">
+        <input matInput placeholder="Username" [(ngModel)]="Username" name="username" >
+      </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <input matInput type="password" placeholder="password" [(ngModel)]="Password" name="password" >
+      </mat-form-field>
+  </form>
+  <div class="form-group">
+      <button [disabled]="loading" (click)="doSomething($event)" class="btn btn-primary">Register</button>
+      <a [routerLink]="['/login']" class="btn btn-link">Login</a>
+  </div>
+</div>
+

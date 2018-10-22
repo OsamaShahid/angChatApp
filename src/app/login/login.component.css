@@ -1,0 +1,22 @@
+h1 {
+    color: rgb(255, 255, 255);
+    padding-left: 10%;
+    padding-top: 10%;
+    padding-bottom: 3%;
+
+}
+
+
+.bg {
+    background-image: url('/assets/images/bg_1.png');
+}
+
+.example-form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .example-full-width {
+    width: 100%;
+  }
