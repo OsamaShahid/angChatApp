@@ -7,14 +7,14 @@
   <h2>Register</h2>
   <form class="example-form">
       <mat-form-field class="example-full-width">
-        <input matInput placeholder="Username" [(ngModel)]="Username" name="username" >
+        <input matInput placeholder="Username" name="username" [(ngModel)]="model.username" #username="ngModel" >
       </mat-form-field>
       <mat-form-field class="example-full-width">
-        <input matInput type="password" placeholder="password" [(ngModel)]="Password" name="password" >
+        <input matInput type="password" placeholder="password" name="password" [(ngModel)]="model.password" #password="ngModel" >
       </mat-form-field>
   </form>
   <div class="form-group">
-      <button [disabled]="loading" (click)="doSomething($event)" class="btn btn-primary">Register</button>
+      <button [disabled]="loading" (click)="registerUser()" class="btn btn-primary">Register</button>
       <a [routerLink]="['/login']" class="btn btn-link">Login</a>
   </div>
 </div>

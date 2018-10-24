@@ -1,0 +1,51 @@
+<div class="fullBodyDiv">
+  <div class="container">
+    <h1 class="text-center" style="color:aliceblue">MongOOseChat</h1>
+    <div class="messaging" >
+      <div class="inbox_msg" >
+        <div class="inbox_people">
+          <div class="headind_srch">
+            <div class="recent_heading">
+              <h4>Recent</h4>
+            </div>
+            <div class="srch_bar">
+            </div>
+          </div>
+          <div class="inbox_chat">
+          </div>
+        </div>
+        <div class="mesgs" id="dropContainer">
+          <div class="msg_history">
+          </div>
+          <div class="type_msg" id="chatroom_type_msg">
+              <div class="input_msg_write">
+                  <form class="uploadImage" enctype="multipart/form-data" id="msg_form" action="/chatroom/img/upload" method="POST">
+                      <emoji-input class="write_msg" id="chatroom_type_area" name="Msg" placeholder="type your message here"  [(model)]="text"
+                        [inputClass]="'red'"
+                        [textArea]="{cols:88,rows:2}"
+                        [closeAfterSelection]="false"
+                        [popupAnchor]="'bottom'" 
+                        (click)="openPopup(false)"
+                        (setPopupAction)="setPopupAction($event)">
+                      </emoji-input>
+                      <div class="emoji-selector-wrapper">
+                        <button type="button" class="emoji_btn" name="button"  style="display: inline-block;" (click)="openPopup()">
+                            <i class="far fa-smile" id="smily" aria-hidden="true"></i>
+                        </button>
+                      </div>
+                      <div class="upload-btn-wrapper">
+                          <button class="upload_btn"><i class="far fa-image" aria-hidden="true"></i></button>
+                          <input type="file" name="msgfile" id="img_input" accept='image/*' />
+                      </div>
+                      <button class="msg_send_btn" type="submit"><i class="fas fa-paper-plane" aria-hidden="true"> </i></button>
+                  </form>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

@@ -1,6 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import {Observable} from 'rxjs/Rx';
+import { ChatService } from '../chat.service';
+import {MatDialog} from "@angular/material"
+import { MessagedialogComponent } from '../messagedialog/messagedialog.component';
+
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -8,16 +13,40 @@ import { HttpClient } from '@angular/common/http';
 })
 export class HomeComponent implements OnInit {
 
-  username = "";
-  Password = "";
-  constructor( private router: Router) { }
+  
+  model : any = {};
+  constructor( private router: Router, private _chatService: ChatService, public dialog : MatDialog) { }
 
-  doSomething(event : Event)
-  {
-    console.log(event);
-  }
 
   ngOnInit() {
+  }
+    
+
+  registerUser() {
+    this._chatService.register(this.model).subscribe(
+        data => {
+          console.log(data)
+          if(data) {
+
+          }
+          else {
+            this.showError("User Alread exists. please pick another username");
+          }
+          return true;
+        },
+        error => {
+          console.error(error);
+          return Observable.throw(error);
+        }
+    );
+  }
+
+  showError(msg : string) : void {
+    this.dialog.open(MessagedialogComponent, {
+      data: {
+        error: msg
+      } ,width : '400px', height: '200px'
+    });
   }
 
 }
