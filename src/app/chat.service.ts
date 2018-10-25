@@ -14,12 +14,25 @@ export class ChatService {
 
   constructor(private http:HttpClient,private socket: Socket) { }
 
-  register(user : User) {
+  public register(user : User) {
     return this.http.post('http://192.168.34.54:4747/setUserName', user);
   }
   
-  login(user: User) {
+  public login(user: User) {
     return this.http.post('http://192.168.34.54:4747/chatroom/login', user);
+  }
+
+  public broadCastMsg(newMsg:any)
+  {
+    return this.http.post('http://192.168.34.54:4747/chatroom/putChats', newMsg);
+  }
+
+  public validateSession(user: User) {
+    return this.http.post('http://192.168.34.54:4747/chatroom/validateSession', user);
+  }
+
+  public getMessagesAndParticepents() {
+    return this.http.get('http://192.168.34.54:4747/chatroom/send/chatsandusers');
   }
 
   public send(message: Message): void {
@@ -37,6 +50,13 @@ export class ChatService {
       this.socket.on('NewUserJoined',(data:any)=>observer.next(data));
     });
   }
+
+  public onBroadCastMsg(): Observable<any> {
+    return new Observable<any>(observer =>{
+      this.socket.on('onBroadCastMsg',(data:any)=>observer.next(data));
+    });
+  }
+
   public onEvent(event: Event): Observable<any> {
       return new Observable<Event>(observer => {
           this.socket.on(event, () => observer.next());

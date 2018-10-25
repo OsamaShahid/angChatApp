@@ -7,6 +7,9 @@ import {MatInputModule} from '@angular/material/input';
 import { HttpClientModule } from '@angular/common/http';
 import {EmojiPickerModule} from 'ng-emoji-picker-material';
 import { SocketIoModule, SocketIoConfig } from 'ng-socket-io';
+import { CommonModule } from '@angular/common';
+import {MatMenuModule} from '@angular/material/menu';
+import {MatIconModule} from '@angular/material';
 
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
@@ -35,8 +38,11 @@ const config: SocketIoConfig = { url: 'http://192.168.34.54:4747', options: {} }
     HttpClientModule,
     BrowserAnimationsModule,
     MatButtonModule,
+    CommonModule,
     EmojiPickerModule,
+    MatMenuModule,
     ReactiveFormsModule,
+    MatIconModule,
     MatCheckboxModule,
     MatDialogModule,
     MatSnackBarModule,

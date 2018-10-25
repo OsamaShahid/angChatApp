@@ -17,9 +17,30 @@ import { User } from '../_Model';
 export class LoginComponent implements OnInit {
 
   model : any = {};
-  constructor(private router: Router, private _chatService: ChatService, public dialog : MatDialog,@Inject(PLATFORM_ID) private platformId: Object) { }
+  constructor(private router: Router, private _chatService: ChatService, public dialog : MatDialog,@Inject(PLATFORM_ID) private platformId: Object) {
+    
+   }
 
   ngOnInit() {
+    this.checkSession();
+  }
+  checkSession() {
+    this.model.Username =  window.localStorage.getItem("current-user");
+    console.log(this.model.Username);
+    this._chatService.validateSession(this.model).subscribe(
+      (data:any) => {
+        if(data.check) {
+        }
+        else {
+          this.router.navigate(['/chatroom']);
+        }
+        return true;
+      },
+      error => {
+        console.error(error);
+        return Observable.throw(error);
+      }
+    );
   }
   showError(msg : string) : void {
     this.dialog.open(MessagedialogComponent, {
@@ -37,8 +58,7 @@ export class LoginComponent implements OnInit {
           }
           else {
             if (isPlatformBrowser(this.platformId)) {
-              window.localStorage.setItem("current-user",data.userName);
-              alert(window.localStorage.getItem("current-user"));
+              window.localStorage.setItem("current-user",data[0]['userName']);
             }
             this.router.navigate(['/chatroom']);
           }
