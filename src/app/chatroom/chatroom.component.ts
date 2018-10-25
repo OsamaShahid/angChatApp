@@ -4,8 +4,9 @@ import { ChatService } from '../chat.service';
 import { Router } from '@angular/router';
 import {Observable} from 'rxjs/Rx';
 import { User, Message } from '../_Model/index';
-import {Event} from '../_Model/event';
+import {Eevent} from '../_Model/eevent';
 import {MatSnackBar} from '@angular/material';
+import * as $ from 'jquery';
 
 
 @Component({
@@ -18,6 +19,8 @@ export class ChatroomComponent implements OnInit,OnDestroy {
   messages:any[];
   participents:any[];
   text:string = "";
+  selectedFile:File = null;
+  isFileSelected:boolean = false;
   constructor(private router: Router, private _chatService: ChatService,public snackBar: MatSnackBar) { 
     
   }
@@ -28,6 +31,18 @@ export class ChatroomComponent implements OnInit,OnDestroy {
   }
 
   ngOnDestroy() {
+  }
+
+  onFileSelected(event)
+  {
+    if(event.target.files.length)
+    {
+      this.isFileSelected = true;
+      this.selectedFile = event.target.files[0];
+    }
+    else {
+      this.isFileSelected = false
+    }
   }
 
   public getUser(name:String) : boolean
@@ -41,20 +56,40 @@ export class ChatroomComponent implements OnInit,OnDestroy {
 
   public checkClick() 
   {
-    var newMsg = {
-      name: window.localStorage.getItem("current-user"),
-      chat: this.text
-    };
-    this.text = "";
-    this._chatService.broadCastMsg(newMsg).subscribe(
-      data => {
-        return true;
-      },
-      error => {
-        console.error(error);
-        return Observable.throw(error);
-      }
-    );
+    if(this.isFileSelected)
+    {
+      var msgform = $('#msg_form')[0];
+      var formData = new FormData(msgform);
+      formData.append('userName', window.localStorage.getItem("current-user"));
+      $.ajax({
+        url: 'http://192.168.34.54:4747/chatroom/img/upload',
+        method: 'post',
+        enctype: 'multipart/form-data',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response){
+          this.text = ''
+        }
+      });
+    }
+    else
+    {
+      var newMsg = {
+        name: window.localStorage.getItem("current-user"),
+        chat: this.text
+      };
+      this.text = "";
+      this._chatService.broadCastMsg(newMsg).subscribe(
+        data => {
+          return true;
+        },
+        error => {
+          console.error(error);
+          return Observable.throw(error);
+        }
+      );
+    }
   }
   checkSession() {
     if(window.localStorage.getItem("current-user") == null)
@@ -125,12 +160,12 @@ export class ChatroomComponent implements OnInit,OnDestroy {
         this.messages.push(data);
       });
 
-    this._chatService.onEvent(Event.CONNECT)
+    this._chatService.onEvent(Eevent.CONNECT)
       .subscribe(() => {
         console.log('connected');
       });
       
-    this._chatService.onEvent(Event.DISCONNECT)
+    this._chatService.onEvent(Eevent.DISCONNECT)
       .subscribe(() => {
         console.log('disconnected');
       });

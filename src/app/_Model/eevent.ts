@@ -1,5 +1,5 @@
-// Socket.io events
-export enum Event {
+// Socket.io eevents
+export enum Eevent {
     CONNECT = 'connect',
     DISCONNECT = 'disconnect'
 }

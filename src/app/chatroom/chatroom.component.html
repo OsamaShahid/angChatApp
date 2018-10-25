@@ -27,15 +27,20 @@
             <div *ngFor="let chatMessage of messages">
               <div *ngIf = "getUser(chatMessage.name); else inboxMsg" class="outgoing_msg">
                 <div class="sent_msg">
-                  <p>{{chatMessage.chat}}</p>
+                  <p *ngIf = '!(chatMessage.chat == "")' >{{chatMessage.chat}}</p>
+                  <img *ngIf = '!(chatMessage.image == "")' class="msg-img" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
                   <span class="time_date"></span>
                 </div>
               </div>
               <ng-template #inboxMsg>
                 <div class="incoming_msg">
+                  <div class="incoming_msg_img">
+                    <img src="https://ptetutorials.com/images/user-profile.png" alt="{{chatMessage.name}}" style="color:darkgreen">
+                  </div>
                   <div class="received_msg">
                     <div class="received_withd_msg">
-                      <p>{{chatMessage.chat}}</p>
+                      <p *ngIf = '!(chatMessage.chat == "")'>{{chatMessage.chat}}</p>
+                      <img *ngIf = '!(chatMessage.image == "")' class="msg-img" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
                       <span class="time_date">{{chatMessage.name}}</span>
                     </div>
                     </div>
@@ -60,7 +65,7 @@
                       </div>
                       <div class="upload-btn-wrapper">
                           <button class="upload_btn"><i class="far fa-image" aria-hidden="true"></i></button>
-                          <input type="file" name="msgfile" id="img_input" accept='image/*' />
+                          <input type="file" name="msgfile" (change) = "onFileSelected($event)" id="img_input" accept='image/*' />
                       </div>
                       <button class="msg_send_btn" type="submit" (click)="checkClick()"><i class="fas fa-paper-plane" aria-hidden="true"> </i></button>
                   </form>

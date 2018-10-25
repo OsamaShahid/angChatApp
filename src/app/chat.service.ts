@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import { User, Message } from './_Model/index'
 import { Socket } from 'ng-socket-io';
-import { Event } from './_Model/event';
+import { Eevent } from './_Model/eevent';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -57,7 +57,7 @@ export class ChatService {
     });
   }
 
-  public onEvent(event: Event): Observable<any> {
+  public onEvent(event: Eevent): Observable<any> {
       return new Observable<Event>(observer => {
           this.socket.on(event, () => observer.next());
       });
