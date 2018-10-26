@@ -14,12 +14,25 @@
                   <mat-icon>logout</mat-icon>
                   <span>Logout</span>
                 </button>
+                <button mat-menu-item (click)="backToChatRoom()">
+                    <mat-icon>back</mat-icon>
+                    <span>chatroom</span>
+                  </button>
               </mat-menu>
             </div>
             <div class="srch_bar">
             </div>
           </div>
           <div class="inbox_chat">
+              <div *ngFor="let chatroomParticepent of participents"  class="chat_list" id = "{{chatroomParticepent.userName}}" onclick="changeView(this)">
+                  <div class="chat_people">
+                  <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt=""> </div>
+                  <div class="chat_ib">
+                    <h4>{{chatroomParticepent.userName}}<span class="chat_date"></span></h4>
+                    <p *ngIf="false"></p>
+                  </div>
+                  </div>
+              </div>
           </div>
         </div>
         <div class="mesgs" id="dropContainer">
@@ -28,19 +41,19 @@
               <div *ngIf = "getUser(chatMessage.name); else inboxMsg" class="outgoing_msg">
                 <div class="sent_msg">
                   <p *ngIf = '!(chatMessage.chat == "")' >{{chatMessage.chat}}</p>
-                  <img *ngIf = '!(chatMessage.image == "")' class="msg-img" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
+                  <img mat-card-image *ngIf = '!(chatMessage.image == "")' class="msg-img" (click)="enlargeImage($event)" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
                   <span class="time_date"></span>
                 </div>
               </div>
               <ng-template #inboxMsg>
                 <div class="incoming_msg">
                   <div class="incoming_msg_img">
-                    <img src="https://ptetutorials.com/images/user-profile.png" alt="{{chatMessage.name}}" style="color:darkgreen">
+                    <img mat-card-image src="https://ptetutorials.com/images/user-profile.png" alt="{{chatMessage.name}}" style="color:darkgreen">
                   </div>
                   <div class="received_msg">
                     <div class="received_withd_msg">
                       <p *ngIf = '!(chatMessage.chat == "")'>{{chatMessage.chat}}</p>
-                      <img *ngIf = '!(chatMessage.image == "")' class="msg-img" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
+                      <img mat-card-image *ngIf = '!(chatMessage.image == "")' class="msg-img" (click)="enlargeImage($event)" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
                       <span class="time_date">{{chatMessage.name}}</span>
                     </div>
                     </div>
@@ -72,6 +85,20 @@
               </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Model for showing enlarged image -->
+<div class="modal fade" id="enlargeImageModal" tabindex="-1" role="dialog" aria-labelledby="enlargeImageModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      </div>
+      <div class="modal-body">
+        <img src="" class="enlargeImageModalSource" style="width: 100%;">
       </div>
     </div>
   </div>

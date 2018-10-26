@@ -32,7 +32,11 @@ export class ChatService {
   }
 
   public getMessagesAndParticepents() {
-    return this.http.get('http://192.168.34.54:4747/chatroom/send/chatsandusers');
+    return this.http.post('http://192.168.34.54:4747/chatroom//get/chats',null);
+  }
+
+  public getParticepents() {
+    return this.http.post('http://192.168.34.54:4747/chatroom/get/particepents', null);
   }
 
   public send(message: Message): void {

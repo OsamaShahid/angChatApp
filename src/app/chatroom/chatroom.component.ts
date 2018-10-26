@@ -6,8 +6,9 @@ import {Observable} from 'rxjs/Rx';
 import { User, Message } from '../_Model/index';
 import {Eevent} from '../_Model/eevent';
 import {MatSnackBar} from '@angular/material';
-import * as $ from 'jquery';
-
+import * as $ from 'jquery'
+import 'bootstrap'
+import { error } from 'util';
 
 @Component({
   selector: 'app-chatroom',
@@ -16,10 +17,12 @@ import * as $ from 'jquery';
 })
 export class ChatroomComponent implements OnInit,OnDestroy {
   model:any = {};
-  messages:any[];
-  participents:any[];
+  messages:any[] = null;
+  individualMessages:any[] = null;
+  participents:any[] = null;
   text:string = "";
   selectedFile:File = null;
+  public static currentActiveChatUser:string = null;
   isFileSelected:boolean = false;
   constructor(private router: Router, private _chatService: ChatService,public snackBar: MatSnackBar) { 
     
@@ -33,6 +36,14 @@ export class ChatroomComponent implements OnInit,OnDestroy {
   ngOnDestroy() {
   }
 
+  backToChatRoom() {
+    console.log(ChatroomComponent.currentActiveChatUser);
+    if(ChatroomComponent.currentActiveChatUser !=null)
+    {
+      document.getElementById(ChatroomComponent.currentActiveChatUser).classList.remove('active_chat');
+      ChatroomComponent.currentActiveChatUser = null;
+    }
+  }
   onFileSelected(event)
   {
     if(event.target.files.length)
@@ -56,11 +67,17 @@ export class ChatroomComponent implements OnInit,OnDestroy {
 
   public checkClick() 
   {
+    if(!this.isFileSelected && this.text.trim()==="")
+    {
+      this.snackBar.open(`cannot send empty message`, "ok");
+      return;
+    }
     if(this.isFileSelected)
     {
       var msgform = $('#msg_form')[0];
       var formData = new FormData(msgform);
       formData.append('userName', window.localStorage.getItem("current-user"));
+      formData.append('chatMsg', this.text);
       $.ajax({
         url: 'http://192.168.34.54:4747/chatroom/img/upload',
         method: 'post',
@@ -111,18 +128,26 @@ export class ChatroomComponent implements OnInit,OnDestroy {
           
                 }
                 else {
-
                   this.messages = data.chatsToSend;
-                  this.participents = data.usersToSend;
-                  console.log(this.messages,this.participents);
                 }
-                return true;
               },
               error => {
                 console.error(error);
                 return Observable.throw(error);
-              }
-            );
+              });
+              this._chatService.getParticepents().subscribe(
+                (data:any) => {
+                  if(data.check) {
+                  }
+                  else {
+                    this.participents = data.AllUsers;
+                  }
+                },
+                error => {
+                  console.error(error);
+                  return Observable.throw(error);
+                });
+                console.log(this.messages,this.participents);
           }
           return true;
         },
@@ -135,6 +160,11 @@ export class ChatroomComponent implements OnInit,OnDestroy {
     
   }
 
+enlargeImage(current)
+{
+  $('.enlargeImageModalSource').attr('src', current.target.src);
+  $('#enlargeImageModal').modal('show');
+}
 
 
   public openPopup: Function;
@@ -175,5 +205,4 @@ export class ChatroomComponent implements OnInit,OnDestroy {
     window.localStorage.removeItem("current-user");
     this.router.navigate(['/login']);
   }
-  
 }
