@@ -3,27 +3,34 @@ import { FormGroup } from '@angular/forms';
 import { ChatService } from '../chat.service';
 import { Router } from '@angular/router';
 import {Observable} from 'rxjs/Rx';
-import { User, Message } from '../_Model/index';
+import { User, Message,Individualchats } from '../_Model/index';
 import {Eevent} from '../_Model/eevent';
 import {MatSnackBar} from '@angular/material';
 import * as $ from 'jquery'
 import 'bootstrap'
 import { error } from 'util';
-
+interface HTMLInputEvent extends Event {
+  target: HTMLInputElement & EventTarget;
+}
 @Component({
   selector: 'app-chatroom',
   templateUrl: './chatroom.component.html',
   styleUrls: ['./chatroom.component.css']
 })
 export class ChatroomComponent implements OnInit,OnDestroy {
+  
+  // data members for storing data comming through api calls
   model:any = {};
   messages:any[] = null;
-  individualMessages:any[] = null;
+  individualMessages:Array<Individualchats>;
   participents:any[] = null;
   text:string = "";
   selectedFile:File = null;
+  isIndvidualchatActive:boolean = false;
   public static currentActiveChatUser:string = null;
   isFileSelected:boolean = false;
+  isNewConversation:boolean = false;
+  
   constructor(private router: Router, private _chatService: ChatService,public snackBar: MatSnackBar) { 
     
   }
@@ -31,19 +38,84 @@ export class ChatroomComponent implements OnInit,OnDestroy {
   ngOnInit() {
     this.checkSession();
     this.initIoConnection();
+    this.individualMessages = new Array<Individualchats>();
   }
 
   ngOnDestroy() {
   }
 
   backToChatRoom() {
-    console.log(ChatroomComponent.currentActiveChatUser);
-    if(ChatroomComponent.currentActiveChatUser !=null)
+    if(window.localStorage.getItem("current-active-user") !=null)
     {
+      this.isIndvidualchatActive = false;
+      ChatroomComponent.currentActiveChatUser = window.localStorage.getItem("current-active-user");
       document.getElementById(ChatroomComponent.currentActiveChatUser).classList.remove('active_chat');
       ChatroomComponent.currentActiveChatUser = null;
+      window.localStorage.removeItem("current-active-user");
     }
   }
+
+  ondragover(event:Event) {
+    event.preventDefault();
+  }
+
+  ondragenter(event:Event) {
+    event.preventDefault();
+  }
+  
+  ondrop(event:DragEvent) {
+    event.preventDefault();
+    var el = (<HTMLInputElement>document.getElementById('img_input'));
+    el.files =  event.dataTransfer.files;
+  }
+
+  // Make the app aware that now individual chat is active
+  makeIndvidualChatActive() {
+    while(window.localStorage.getItem("current-active-user") == null)
+    {}
+    ChatroomComponent.currentActiveChatUser = window.localStorage.getItem("current-active-user");
+    this.isIndvidualchatActive = true;
+    var conversation = {
+      ReceiverName: window.localStorage.getItem("current-active-user"),
+      SenderName: window.localStorage.getItem("current-user")
+    };
+    this._chatService.getConversation(conversation).subscribe(
+      (data:any) => {
+        if(data.check) {
+          this.isNewConversation = false;
+          this.individualMessages = null;
+          this.individualMessages = data.chatList;
+          console.log(data.chatList);
+         }
+         else {
+           this._chatService.getconversationR(conversation).subscribe(
+            (data:any) => {
+              if(data.check) {
+                this.isNewConversation = false;
+                this.individualMessages = null;
+                this.individualMessages = data.chatList;
+                console.log(data.chatList);
+               }
+               else {
+                 this.isNewConversation = true;
+               }
+              return true;
+            },
+            error => {
+              console.error(error);
+              return Observable.throw(error);
+            }
+          );
+         }
+        return true;
+      },
+      error => {
+        console.error(error);
+        return Observable.throw(error);
+      }
+    );
+  }
+
   onFileSelected(event)
   {
     if(event.target.files.length)
@@ -72,40 +144,67 @@ export class ChatroomComponent implements OnInit,OnDestroy {
       this.snackBar.open(`cannot send empty message`, "ok");
       return;
     }
-    if(this.isFileSelected)
-    {
-      var msgform = $('#msg_form')[0];
-      var formData = new FormData(msgform);
-      formData.append('userName', window.localStorage.getItem("current-user"));
-      formData.append('chatMsg', this.text);
-      $.ajax({
-        url: 'http://192.168.34.54:4747/chatroom/img/upload',
-        method: 'post',
-        enctype: 'multipart/form-data',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response){
-          this.text = ''
+    if(this.isIndvidualchatActive) {
+      if(this.isFileSelected) {
+      
+      }
+      else {
+        var curDate = new Date();
+        var chatMessage = {
+            SenderName: window.localStorage.getItem("current-user"),
+            ReceiverName: ChatroomComponent.currentActiveChatUser,
+            chat: this.text, 
+            chatImage: "", 
+            currentDateTime: curDate.toISOString()
         }
-      });
+        this.text = "";
+        this._chatService.broadCastIndvidMsg(chatMessage).subscribe(
+          data => {
+            return true;
+          },
+          error => {
+            console.error(error);
+            return Observable.throw(error);
+          }
+        );
+      }
     }
-    else
-    {
-      var newMsg = {
-        name: window.localStorage.getItem("current-user"),
-        chat: this.text
-      };
-      this.text = "";
-      this._chatService.broadCastMsg(newMsg).subscribe(
-        data => {
-          return true;
-        },
-        error => {
-          console.error(error);
-          return Observable.throw(error);
-        }
-      );
+    else {
+      if(this.isFileSelected)
+      {
+        var msgform = $('#msg_form')[0];
+        var formData = new FormData(msgform);
+        formData.append('userName', window.localStorage.getItem("current-user"));
+        formData.append('chatMsg', this.text);
+        $.ajax({
+          url: 'http://192.168.34.54:4747/chatroom/img/upload',
+          method: 'post',
+          enctype: 'multipart/form-data',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response){
+            this.text = ''
+          }
+        });
+      }
+      else
+      {
+        var newMsg = {
+          name: window.localStorage.getItem("current-user"),
+          chat: this.text
+        };
+        this.text = "";
+        this._chatService.broadCastMsg(newMsg).subscribe(
+          data => {
+            return true;
+          },
+          error => {
+            console.error(error);
+            return Observable.throw(error);
+          }
+        );
+      }
     }
   }
   checkSession() {
@@ -185,10 +284,16 @@ enlargeImage(current)
         }
       });
 
-      this._chatService.onBroadCastMsg()
-      .subscribe((data:any) => {
-        this.messages.push(data);
-      });
+    this._chatService.onBroadCastMsg()
+    .subscribe((data:any) => {
+      this.messages.push(data);
+    });
+
+    this._chatService.onIndChatMsg()
+    .subscribe((data:any) => {
+      console.log(data);
+      this.individualMessages.push(data);
+    });
 
     this._chatService.onEvent(Eevent.CONNECT)
       .subscribe(() => {

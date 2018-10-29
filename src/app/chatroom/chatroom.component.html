@@ -15,8 +15,10 @@
                   <span>Logout</span>
                 </button>
                 <button mat-menu-item (click)="backToChatRoom()">
-                    <mat-icon>back</mat-icon>
-                    <span>chatroom</span>
+                    <i class="material-icons">
+                        arrow_back_ios
+                    </i>
+                    <span>Chatroom</span>
                   </button>
               </mat-menu>
             </div>
@@ -24,7 +26,7 @@
             </div>
           </div>
           <div class="inbox_chat">
-              <div *ngFor="let chatroomParticepent of participents"  class="chat_list" id = "{{chatroomParticepent.userName}}" onclick="changeView(this)">
+              <div *ngFor="let chatroomParticepent of participents"   class="chat_list" id = "{{chatroomParticepent.userName}}" onclick="changeView(this)" (click)="makeIndvidualChatActive()">
                   <div class="chat_people">
                   <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt=""> </div>
                   <div class="chat_ib">
@@ -35,31 +37,73 @@
               </div>
           </div>
         </div>
-        <div class="mesgs" id="dropContainer">
+        <div class="mesgs" id="dropContainer" (dragenter)="ondragenter($event)" (dragover)="ondragover($event)"  (drop)="ondrop($event)">
           <div class="msg_history">
-            <div *ngFor="let chatMessage of messages">
-              <div *ngIf = "getUser(chatMessage.name); else inboxMsg" class="outgoing_msg">
-                <div class="sent_msg">
-                  <p *ngIf = '!(chatMessage.chat == "")' >{{chatMessage.chat}}</p>
-                  <img mat-card-image *ngIf = '!(chatMessage.image == "")' class="msg-img" (click)="enlargeImage($event)" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
-                  <span class="time_date"></span>
-                </div>
-              </div>
-              <ng-template #inboxMsg>
-                <div class="incoming_msg">
-                  <div class="incoming_msg_img">
-                    <img mat-card-image src="https://ptetutorials.com/images/user-profile.png" alt="{{chatMessage.name}}" style="color:darkgreen">
+            <ng-container
+              *ngIf="isIndvidualchatActive; then individualChatActive; else chatRoomActive">
+            </ng-container>
+            <ng-template #individualChatActive>
+                <ng-container
+                *ngIf="isNewConversation; then newChat; else existingChat">
+              </ng-container>
+              <ng-template #newChat>
+                  <div>
+                    Start new Conversation
                   </div>
-                  <div class="received_msg">
-                    <div class="received_withd_msg">
-                      <p *ngIf = '!(chatMessage.chat == "")'>{{chatMessage.chat}}</p>
-                      <img mat-card-image *ngIf = '!(chatMessage.image == "")' class="msg-img" (click)="enlargeImage($event)" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
-                      <span class="time_date">{{chatMessage.name}}</span>
+                </ng-template>
+              <ng-template #existingChat>
+                <div id="currentChatHistory">
+                  <div *ngFor="let curChatMessage of individualMessages">
+                    <div *ngIf = "getUser(curChatMessage.senderName); else inboxMsg" class="outgoing_msg">
+                      <div class="sent_msg">
+                        <p *ngIf = '!(curChatMessage.chatMessage == "")' >{{curChatMessage.chatMessage}}</p>
+                        <img mat-card-image *ngIf = '!(curChatMessage.chatImage == "")' class="msg-img" (click)="enlargeImage($event)" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{curChatMessage.chatImage}}">
+                        <span class="time_date"></span>
+                      </div>
                     </div>
-                    </div>
+                    <ng-template #inboxMsg>
+                      <div class="incoming_msg">
+                        <div class="incoming_msg_img">
+                          <img mat-card-image src="https://ptetutorials.com/images/user-profile.png" alt="{{curChatMessage.receiverName}}" style="color:darkgreen">
+                        </div>
+                        <div class="received_msg">
+                          <div class="received_withd_msg">
+                            <p *ngIf = '!(curChatMessage.chatMessage == "")'>{{curChatMessage.chatMessage}}</p>
+                            <img mat-card-image *ngIf = '!(curChatMessage.chatImage == "")' class="msg-img" (click)="enlargeImage($event)" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{curChatMessage.chatImage}}">
+                            <span class="time_date">{{curChatMessage.senderName}}</span>
+                          </div>
+                          </div>
+                      </div>
+                    </ng-template>
+                  </div>
                 </div>
-              </ng-template>
-            </div>
+              </ng-template>              
+            </ng-template>
+            <ng-template #chatRoomActive>
+              <div *ngFor="let chatMessage of messages">
+                <div *ngIf = "getUser(chatMessage.name); else inboxMsg" class="outgoing_msg">
+                  <div class="sent_msg">
+                    <p *ngIf = '!(chatMessage.chat == "")' >{{chatMessage.chat}}</p>
+                    <img mat-card-image *ngIf = '!(chatMessage.image == "")' class="msg-img" (click)="enlargeImage($event)" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
+                    <span class="time_date"></span>
+                  </div>
+                </div>
+                <ng-template #inboxMsg>
+                  <div class="incoming_msg">
+                    <div class="incoming_msg_img">
+                      <img mat-card-image src="https://ptetutorials.com/images/user-profile.png" alt="{{chatMessage.name}}" style="color:darkgreen">
+                    </div>
+                    <div class="received_msg">
+                      <div class="received_withd_msg">
+                        <p *ngIf = '!(chatMessage.chat == "")'>{{chatMessage.chat}}</p>
+                        <img mat-card-image *ngIf = '!(chatMessage.image == "")' class="msg-img" (click)="enlargeImage($event)" style="border-radius: 5px;cursor: pointer;transition: 0.3s;"  src="{{chatMessage.chatImage}}">
+                        <span class="time_date">{{chatMessage.name}}</span>
+                      </div>
+                      </div>
+                  </div>
+                </ng-template>
+              </div>
+            </ng-template>
           </div>
           <div class="type_msg" id="chatroom_type_msg">
               <div class="input_msg_write">
@@ -80,7 +124,7 @@
                           <button class="upload_btn"><i class="far fa-image" aria-hidden="true"></i></button>
                           <input type="file" name="msgfile" (change) = "onFileSelected($event)" id="img_input" accept='image/*' />
                       </div>
-                      <button class="msg_send_btn" type="submit" (click)="checkClick()"><i class="fas fa-paper-plane" aria-hidden="true"> </i></button>
+                      <button class="msg_send_btn" type="submit" (click)="checkClick()"><i class="material-icons" aria-hidden="true">send</i></button>
                   </form>
               </div>
           </div>

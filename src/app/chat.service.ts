@@ -39,6 +39,18 @@ export class ChatService {
     return this.http.post('http://192.168.34.54:4747/chatroom/get/particepents', null);
   }
 
+  public getConversation(conversation:any) {
+    return this.http.post('http://192.168.34.54:4747/chatroom/getallindchat', conversation);
+  }
+
+  public getconversationR(conversation:any) {
+    return this.http.post('http://192.168.34.54:4747/chatroom/getallindchatR', conversation);
+  }
+
+  public broadCastIndvidMsg(messg:any) {
+    return this.http.post('http://192.168.34.54:4747/chatroom/putIndChats', messg);
+  }
+
   public send(message: Message): void {
     this.socket.emit('message', message);
   }
@@ -58,6 +70,12 @@ export class ChatService {
   public onBroadCastMsg(): Observable<any> {
     return new Observable<any>(observer =>{
       this.socket.on('onBroadCastMsg',(data:any)=>observer.next(data));
+    });
+  }
+
+  public onIndChatMsg(): Observable<any> {
+    return new Observable<any>(observer =>{
+      this.socket.on('indChat',(data:any)=>observer.next(data));
     });
   }
 

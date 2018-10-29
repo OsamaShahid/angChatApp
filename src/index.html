@@ -19,12 +19,13 @@
   <app-root></app-root>
   <script>
     changeView = function(cur) {
-    console.log(this.urrentActiveChatUser);
     if(this.currentActiveChatUser!=null)
     {
       document.getElementById(this.currentActiveChatUser).classList.remove('active_chat');
     }
-    currentActiveChatUser = cur.id;
+    window.localStorage.removeItem("current-active-user");
+    window.localStorage.setItem("current-active-user", cur.id)
+    currentActiveChatUser = window.localStorage.getItem("current-active-user");
     document.getElementById(this.currentActiveChatUser).classList.add('active_chat');
     console.log(this.currentActiveChatUser);
 

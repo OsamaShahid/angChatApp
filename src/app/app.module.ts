@@ -21,6 +21,7 @@ import { ChatroomComponent } from './chatroom/chatroom.component';
 import { MessagedialogComponent } from './messagedialog/messagedialog.component';
 import { MatDialogModule } from '@angular/material/dialog'
 import {MatSnackBarModule} from '@angular/material';
+import { from } from 'rxjs/observable/from';
 
 const config: SocketIoConfig = { url: 'http://192.168.34.54:4747', options: {} };
 
