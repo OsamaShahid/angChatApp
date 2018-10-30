@@ -5,7 +5,7 @@ img{ max-width:100%;}
   float: left;
   overflow: hidden;
   height: 82.1%;
-  width: 40%; border-right:1px solid #c4c4c4;
+  width: 20%; border-right:1px solid #c4c4c4;
 }
 .inbox_msg {
   border: 1px solid #c4c4c4;
@@ -15,6 +15,9 @@ img{ max-width:100%;}
 }
 .top_spac{ margin: 20px 0 0;}
 
+.write_msg {
+  position: relative;
+}
 
 .recent_heading {float: left; width:40%;}
 .srch_bar {
@@ -24,7 +27,7 @@ img{ max-width:100%;}
 }
 .headind_srch{ padding:10px 29px 10px 20px; overflow:hidden; border-bottom:1px solid #c4c4c4;}
 
-.recent_heading h4 {
+.recent_heading h2 {
   color: #05728f;
   font-size: 21px;
   margin: auto;
@@ -81,7 +84,6 @@ a:hover {
   padding: 18px 16px 10px;
 }
 .inbox_chat { height: 658px; overflow-y: scroll; 
-  /* width: inherit */
 }
 
 .active_chat{ background:#ebebeb;}

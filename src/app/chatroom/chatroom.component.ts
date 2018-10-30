@@ -8,7 +8,8 @@ import {Eevent} from '../_Model/eevent';
 import {MatSnackBar} from '@angular/material';
 import * as $ from 'jquery'
 import 'bootstrap'
-import { error } from 'util';
+import {FormControl} from '@angular/forms';
+
 interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget;
 }
@@ -21,8 +22,9 @@ export class ChatroomComponent implements OnInit,OnDestroy {
   
   // data members for storing data comming through api calls
   model:any = {};
-  messages:any[] = null;
+  messages:Array<any>;
   individualMessages:Array<Individualchats>;
+  conversations:Array<any>;
   participents:any[] = null;
   text:string = "";
   selectedFile:File = null;
@@ -30,18 +32,44 @@ export class ChatroomComponent implements OnInit,OnDestroy {
   public static currentActiveChatUser:string = null;
   isFileSelected:boolean = false;
   isNewConversation:boolean = false;
+  imageSrc: string;
+  myControl: FormControl = new FormControl();
   
   constructor(private router: Router, private _chatService: ChatService,public snackBar: MatSnackBar) { 
     
   }
 
   ngOnInit() {
+    this.individualMessages = new Array<Individualchats>();
+    this.messages = new Array<any>();
+    this.conversations = new Array<any>();
     this.checkSession();
     this.initIoConnection();
-    this.individualMessages = new Array<Individualchats>();
+
+    var user = {
+      Username: window.localStorage.getItem("current-user")
+    };
+    this._chatService.getMyConversations(user).subscribe(
+      (data:any) => {
+        if(data.check) {
+          this.conversations = data.conversations;
+          console.log(this.conversations);
+        }
+        else {
+        }
+      },
+      error => {
+        console.error(error);
+        return Observable.throw(error);
+      });
+    
   }
 
   ngOnDestroy() {
+  }
+
+  checkInput(e:any) {
+    
   }
 
   backToChatRoom() {
@@ -97,6 +125,7 @@ export class ChatroomComponent implements OnInit,OnDestroy {
                 console.log(data.chatList);
                }
                else {
+                 this.individualMessages = [];
                  this.isNewConversation = true;
                }
               return true;
@@ -122,9 +151,18 @@ export class ChatroomComponent implements OnInit,OnDestroy {
     {
       this.isFileSelected = true;
       this.selectedFile = event.target.files[0];
+      if (event.target.files && event.target.files[0]) {
+        const file = event.target.files[0];
+
+        const reader = new FileReader();
+        reader.onload = e => this.imageSrc = <string>reader.result;
+
+        reader.readAsDataURL(file);
+    }
     }
     else {
-      this.isFileSelected = false
+      this.isFileSelected = false;
+      this.imageSrc = '';
     }
   }
 
@@ -146,7 +184,27 @@ export class ChatroomComponent implements OnInit,OnDestroy {
     }
     if(this.isIndvidualchatActive) {
       if(this.isFileSelected) {
-      
+        var curDate = new Date();
+        var msgform = $('#msg_form')[0];
+        var formData = new FormData(msgform);
+        formData.append('SenderName', window.localStorage.getItem("current-user"));
+        formData.append('chat', this.text);
+        formData.append('currentDateTime', curDate.toISOString());
+        formData.append('ReceiverName' , ChatroomComponent.currentActiveChatUser)
+        $.ajax({
+          url: 'http://192.168.34.54:4747/chatroom/indvidimg/upload',
+          method: 'post',
+          enctype: 'multipart/form-data',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response){
+          },
+          error: function(error) {
+          }
+        });
+        this.text = '';
+        this.imageSrc = '';
       }
       else {
         var curDate = new Date();
@@ -184,9 +242,12 @@ export class ChatroomComponent implements OnInit,OnDestroy {
           processData: false,
           contentType: false,
           success: function(response){
-            this.text = ''
+          },
+          error: function(error) {
           }
         });
+        this.text = '';
+        this.imageSrc = '';
       }
       else
       {
@@ -293,6 +354,7 @@ enlargeImage(current)
     .subscribe((data:any) => {
       console.log(data);
       this.individualMessages.push(data);
+      this.isNewConversation = false;
     });
 
     this._chatService.onEvent(Eevent.CONNECT)

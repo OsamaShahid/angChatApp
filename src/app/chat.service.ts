@@ -39,6 +39,10 @@ export class ChatService {
     return this.http.post('http://192.168.34.54:4747/chatroom/get/particepents', null);
   }
 
+  public getMyConversations(user:any) {
+    return this.http.post('http://192.168.34.54:4747/chatroom/myStartedConersations', user);
+  }
+
   public getConversation(conversation:any) {
     return this.http.post('http://192.168.34.54:4747/chatroom/getallindchat', conversation);
   }
@@ -50,6 +54,8 @@ export class ChatService {
   public broadCastIndvidMsg(messg:any) {
     return this.http.post('http://192.168.34.54:4747/chatroom/putIndChats', messg);
   }
+
+
 
   public send(message: Message): void {
     this.socket.emit('message', message);

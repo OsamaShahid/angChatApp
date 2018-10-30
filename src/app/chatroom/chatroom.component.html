@@ -26,15 +26,33 @@
             </div>
           </div>
           <div class="inbox_chat">
-              <div *ngFor="let chatroomParticepent of participents"   class="chat_list" id = "{{chatroomParticepent.userName}}" onclick="changeView(this)" (click)="makeIndvidualChatActive()">
-                  <div class="chat_people">
-                  <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt=""> </div>
-                  <div class="chat_ib">
-                    <h4>{{chatroomParticepent.userName}}<span class="chat_date"></span></h4>
-                    <p *ngIf="false"></p>
+              <div *ngFor="let chatroomParticepent of participents">
+                <ng-container
+                  *ngIf="!getUser(chatroomParticepent.userName); then activeParticipents">
+                </ng-container>
+                <ng-template #activeParticipents>
+                  <div class="chat_list" id = "{{chatroomParticepent.userName}}" onclick="changeView(this)" (click)="makeIndvidualChatActive()">
+                    <div class="chat_people">
+                    <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt=""> </div>
+                    <div class="chat_ib">
+                      <h5>{{chatroomParticepent.userName}}<span class="chat_date"></span></h5>
+                      <p *ngIf="false"></p>
+                    </div>
+                    </div>
                   </div>
-                  </div>
+                </ng-template>
               </div>
+          </div>
+        </div>
+        <div class="inbox_people">
+          <div class="headind_srch">
+            <div class="recent_heading">
+              <h3 style="color:darkgreen">Converstions</h3>
+            </div>
+            <div class="srch_bar">
+            </div>
+          </div>
+          <div class="inbox_chat">
           </div>
         </div>
         <div class="mesgs" id="dropContainer" (dragenter)="ondragenter($event)" (dragover)="ondragover($event)"  (drop)="ondrop($event)">
@@ -108,13 +126,20 @@
           <div class="type_msg" id="chatroom_type_msg">
               <div class="input_msg_write">
                   <form class="uploadImage" enctype="multipart/form-data" id="msg_form" action="" method="POST">
-                      <emoji-input class="write_msg" id="chatroom_type_area" name="Msg" placeholder="type your message here"  [(model)]="text" 
+                    <div class="autocomplete" style="width:300px;"></div>
+                      <emoji-input matInput class="write_msg" id="chatroom_type_area" name="Msg" placeholder="type your message here"  [(model)]="text" 
                         [textArea]="{cols:88,rows:2}"
                         [closeAfterSelection]="false"
                         [popupAnchor]="'bottom'" 
                         (click)="openPopup(false)"
+                        (input)="checkInput($event)"
                         (setPopupAction)="setPopupAction($event)">
                       </emoji-input>
+                      <mat-autocomplete #auto="matAutocomplete">
+                        <mat-option *ngFor="let user of participents" [value]="user">
+                          {{ user.userName }}
+                        </mat-option>
+                      </mat-autocomplete>
                       <div class="emoji-selector-wrapper">
                         <button type="button" class="emoji_btn" name="button"  style="display: inline-block;" (click)="openPopup()">
                             <i class="far fa-smile" id="smily" aria-hidden="true"></i>
@@ -123,6 +148,9 @@
                       <div class="upload-btn-wrapper">
                           <button class="upload_btn"><i class="far fa-image" aria-hidden="true"></i></button>
                           <input type="file" name="msgfile" (change) = "onFileSelected($event)" id="img_input" accept='image/*' />
+                      </div>
+                      <div class="upload-btn-wrapper">
+                        <img id="blah" [src]="imageSrc || 'http://placehold.it/180'" alt="your image" style="height:30px;width:40px"/>
                       </div>
                       <button class="msg_send_btn" type="submit" (click)="checkClick()"><i class="material-icons" aria-hidden="true">send</i></button>
                   </form>
