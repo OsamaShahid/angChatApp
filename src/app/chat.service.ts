@@ -39,6 +39,10 @@ export class ChatService {
     return this.http.post('http://192.168.34.54:4747/chatroom/get/particepents', null);
   }
 
+  public reduceIndividualChatCount(pair:any) {
+    return this.http.post('http://192.168.34.54:4747/chatroom/reduceIndividChatCount', pair);
+  }
+
   public getMyConversations(user:any) {
     return this.http.post('http://192.168.34.54:4747/chatroom/myStartedConersations', user);
   }

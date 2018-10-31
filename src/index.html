@@ -30,6 +30,18 @@
     console.log(this.currentActiveChatUser);
 
   }
+  changeConversation = function(cur) {
+    if(this.currentActiveChatUser!=null)
+    {
+      document.getElementById(this.currentActiveChatUser).classList.remove('active_chat');
+    }
+    window.localStorage.removeItem("current-active-user");
+    window.localStorage.setItem("current-active-user", cur.id)
+    currentActiveChatUser = window.localStorage.getItem("current-active-user");
+    document.getElementById(this.currentActiveChatUser).classList.add('active_chat');
+    console.log(this.currentActiveChatUser);
+
+  }
   </script>
 </body>
 </html>

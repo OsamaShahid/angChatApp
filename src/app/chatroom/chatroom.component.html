@@ -50,9 +50,24 @@
               <h3 style="color:darkgreen">Converstions</h3>
             </div>
             <div class="srch_bar">
+              <div></div>
             </div>
           </div>
           <div class="inbox_chat">
+            <div *ngFor="let individConversation of conversations">
+                <div class="chat_list" id = "{{individConversation.receiverName}}" onclick="changeConversation(this)" (click)="makeIndvidualChatActive()">
+                  <div class="chat_people">
+                  <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt=""> </div>
+                  <div class="chat_ib">
+                    <h5>{{individConversation.receiverName}}<span class="chat_date"></span></h5>
+                    <p>
+                      {{individConversation.lastMessage}}
+                      <span class="badge" *ngIf="individConversation.unReadMsgCount > 0">{{individConversation.unReadMsgCount}}</span>
+                    </p>
+                  </div>
+                  </div>
+                </div>
+            </div>
           </div>
         </div>
         <div class="mesgs" id="dropContainer" (dragenter)="ondragenter($event)" (dragover)="ondragover($event)"  (drop)="ondrop($event)">

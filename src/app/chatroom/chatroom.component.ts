@@ -47,7 +47,7 @@ export class ChatroomComponent implements OnInit,OnDestroy {
     this.initIoConnection();
 
     var user = {
-      Username: window.localStorage.getItem("current-user")
+      username: window.localStorage.getItem("current-user")
     };
     this._chatService.getMyConversations(user).subscribe(
       (data:any) => {
@@ -354,6 +354,41 @@ enlargeImage(current)
     .subscribe((data:any) => {
       console.log(data);
       this.individualMessages.push(data);
+      if(data.senderName === ChatroomComponent.currentActiveChatUser)
+      {
+        var pair = {
+          receiverName: window.localStorage.getItem("current-user"),
+          senderName: data.senderName
+        };
+        this._chatService.reduceIndividualChatCount(pair).subscribe(
+        (data:any) => {
+          if(data.check) {
+          }
+          else {
+          }
+        },
+        error => {
+          console.error(error);
+          return Observable.throw(error);
+        });
+      }
+      var user = {
+        username: window.localStorage.getItem("current-user")
+      };
+      this._chatService.getMyConversations(user)
+      .subscribe(
+        (data:any) => {
+          if(data.check) {
+            this.conversations = data.conversations;
+            console.log(this.conversations);
+          }
+          else {
+          }
+        },
+        error => {
+          console.error(error);
+          return Observable.throw(error);
+        });
       this.isNewConversation = false;
     });
 
