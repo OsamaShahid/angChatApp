@@ -274,8 +274,8 @@ export class ChatroomComponent implements OnInit,OnDestroy {
       this.router.navigate(['/login']);
     }
     else {
-      this.model.Username =  window.localStorage.getItem("current-user");
-      console.log(this.model.Username);
+      this.model.username =  window.localStorage.getItem("current-user");
+      console.log(this.model.username);
       this._chatService.validateSession(this.model).subscribe(
         (data:any) => {
           if(data.check) {

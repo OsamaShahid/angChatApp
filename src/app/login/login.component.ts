@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
     this.checkSession();
   }
   checkSession() {
-    this.model.Username =  window.localStorage.getItem("current-user");
+    this.model.username =  window.localStorage.getItem("current-user");
     console.log(this.model.Username);
     this._chatService.validateSession(this.model).subscribe(
       (data:any) => {
